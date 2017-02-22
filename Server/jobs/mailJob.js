@@ -4,6 +4,11 @@ var settings = require("./../internal/settingsManager");
 var transporter = null;
 var nodemailer = require('nodemailer');
 
+var formatter = require("./../internal/formatter");
+
+var mail_data = {};
+
+
 var mailJob = function () {
 };
 
@@ -99,7 +104,7 @@ mailJob.prototype.getProperties = function () {
                 }
             },
             {
-                id: "mailatachfax",
+                id: "mailattachfax",
                 name: "Fax anhängn",
                 description: "Ob das Fax an die Mail als Anhang mitgeschickt wird.",
                 settingType: "bool",
@@ -146,12 +151,34 @@ mailJob.prototype.initialize = function (next, failed) {
                 logger.error(error);
                 failed();
             }
+            mail_data = {
+                betreff: data.mailbetreff,
+                body: data.mailtext,
+                attach: data.mailattachfax,
+                absender: data.mailabsenderadresse
+            };
         });
     };
 };
 mailJob.prototype.doJob = function (operation, recipients, options) {
     if (transporter != null) {
-
+        var mailoptions = {
+            from: mail_data.absender,
+            subject: mail_data.betreff,
+            text: formatter.formatOperation(operation, mail_data.body)
+        };
+        if (mail_data.attach) {
+            mailoptions.attachments = [
+                {
+                    filename: 'Fax.tif',
+                    path: operation.filePath
+                }
+            ];
+        }
+        transporter.sendMail(mailoptions,function () {
+           //TODO: BREAK: callback parameter überprüfen/nachschauen
+            //TODO: Loggen
+        });
     }
 };
 
