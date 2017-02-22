@@ -26,23 +26,24 @@ This project is licensed under the GNU GENERAL PUBLIC LICENSE Version 3. See Lic
 
 The AlarmWorkflow-project makes use of the following libraries:
 
-    MailKit by jstedfast
-    https://github.com/jstedfast/MailKit
+    express
+    https://github.com/expressjs/express
     
-	Ghostscript.NET by jhabjan
-	https://github.com/jhabjan/Ghostscript.NET
-	
-    AvalonDock
-    http://avalondock.codeplex.com/
+    morgan
+    https://github.com/expressjs/morgan
     
-    Some icons by Microsoft, taken from the Visual Studio Image Libraries
+    serve-favicon
+    https://github.com/expressjs/serve-favicon
     
-    Some icons taken from the Windows 7 Icon Pack
-    http://download.chip.eu/de/Windows-7-Icon-Pack_4962481.html
+    ejs
+    https://github.com/mde/ejs
     
-    Some icons taken and adapted from Smallicons 
-    http://smallicons.net/
-
+    
+    
+    
+    
+    
+    
 Furthermore, AlarmWorkflow uses the following applications:
 
     Tesseract OCR by Google

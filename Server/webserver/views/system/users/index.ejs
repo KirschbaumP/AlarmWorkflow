@@ -1,0 +1,94 @@
+<% layout('../../template') -%>
+<% stylesheet('https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap4.min.css') -%>
+<% script('https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js') -%>
+<% script('/static/javascripts/jQueryForm.js') -%>
+<% script('/static/javascripts/system/users/index.js') -%>
+
+<div class="rows">
+    <div class="col-md-12">
+        <h1>Benutzer - Verwaltung</h1>
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#createModal">
+            Neuer Benutzer
+        </button>
+        <table id="dataTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>Benutzername</th>
+                    <th>Administrator</th>
+                    <th></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Benutzernamen &auml;ndern</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm" method="post" action="/system/users/edit">
+                    <div class="form-group row">
+                        <label for="editInputPassword" class="col-sm-4 col-form-label">Passwort</label>
+                        <div class="col-sm-8">
+                            <input type="password" class="form-control" id="editInputPassword" placeholder="Passwort" name="password" required>
+                        </div>
+                    </div>
+                    <input type="hidden" name="id" id="editId">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Schließen</button>
+                <button type="button" class="btn btn-primary" id="saveEdit" disabled>Passwort ändern</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Create Modal -->
+<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createModalLabel">Benutzer hinzuf&uuml;gen</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="createForm" method="post" action="/system/users/create">
+                    <div class="form-group row">
+                        <label for="createInputUsername" class="col-sm-4 col-form-label">Benutzername</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="createInputUsername" placeholder="Benutzername" name="username" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="createInputPassword" class="col-sm-4 col-form-label">Passwort</label>
+                        <div class="col-sm-8">
+                            <input type="password" class="form-control" id="createInputPassword" placeholder="Passwort" name="password" required>
+                        </div>
+                    </div>
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input type="checkbox" class="form-check-input" name="admin">
+                            Admin
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Schließen</button>
+                <button type="button" class="btn btn-primary" id="saveCreate" disabled>Benutzer speichern</button>
+            </div>
+        </div>
+    </div>
+</div>

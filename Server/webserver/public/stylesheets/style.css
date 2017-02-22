@@ -1,0 +1,10 @@
+body {
+    padding-top: 4.5rem;
+}
+
+.floating_alert {
+    position: absolute;
+    top: 20px;
+    left:40%;
+    z-index: 5000;
+}

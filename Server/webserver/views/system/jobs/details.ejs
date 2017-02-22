@@ -1,0 +1,88 @@
+<% layout('../../template') %>
+<% stylesheet('https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap4.min.css') %>
+<% script('https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js') %>
+<% script('/static/javascripts/jQueryForm.js') %>
+<% script('/static/javascripts/system/jobs/details.js') %>
+
+<div class="rows">
+    <div class="col-md-12">
+        <h1><%= job.name %></h1>
+    </div>
+    <div class="col-md-12">
+        <h2>Logs</h2>
+        <table id="logTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+            <thead>
+            <tr>
+                <th>Zeitstempel</th>
+                <th>Level</th>
+                <th>Message</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="col-md-12">
+        <h2>Einstellungen</h2>
+
+        <form id="job-settings-form" method="post" action="/system/jobs/save/<%= job.id %>">
+            <% for(var i = 0; i < job.settings.length; i++) { %>
+            <div class="form-group row" id="row-<%= job.settings[i].id %>">
+                <label for="<%= job.settings[i].id %>" class="col-2 col-form-label"><%= job.settings[i].name %></label>
+                <% if(job.settings[i].settingType == 'string') { %>
+                <div class="col-8">
+                    <input class="form-control" type="text" value="<%= getValue(i) %>"
+                           id="<%= job.settings[i].id %>" name="<%= job.settings[i].id %>">
+                </div>
+                <% } else if(job.settings[i].settingType == 'bool'){ %>
+                <div class="col-8">
+                    <input class="form-control" type="checkbox" value="<%= getValue(i) %>"
+                           id="<%= job.settings[i].id %>" name="<%= job.settings[i].id %>">
+                </div>
+                <% } else if(job.settings[i].settingType == 'password'){ %>
+                <div class="col-8">
+                    <input class="form-control" type="password" gr="<%= job.settings[i].id %>" id="<%= job.settings[i].id %>"
+                           name="<%= job.settings[i].id %>" value="<%= getValue(i) %>" placeholder="Passwort"><br>
+                    <input class="form-control" type="password"  gr="<%= job.settings[i].id %>" value="<%= getValue(i) %>" id="<%= job.settings[i].id %>-repetition"
+                           placeholder="Passwort wiederholen">
+                </div>
+                <% } else if(job.settings[i].settingType == 'text'){ %>
+                <div class="col-8">
+                    <textarea class="form-control" id="<%= job.settings[i].id %>" rows="6"
+                              name="<%= job.settings[i].id %>"><%= getValue(i) %></textarea>
+                </div>
+                <% } else if(job.settings[i].settingType == 'list'){ %>
+                <% } else if(job.settings[i].settingType == 'number'){ %>
+                <div class="col-8">
+                    <input class="form-control" type="number" value="<%= getValue(i) %>"
+                           id="<%= job.settings[i].id %>" name="<%= job.settings[i].id %>">
+                </div>
+                <% } %>
+            </div>
+            <% } %>
+            <button class="btn btn-large btn-success" type="submit">Speichern</button>
+        </form>
+    </div>
+
+</div>
+
+<!-- Save - Modal -->
+<div class="modal" id="saveModal" tabindex="-1" role="dialog" aria-labelledby="saveModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="saveModalLabel">Speichern</h5>
+            </div>
+            <div class="modal-body">
+                Die Daten werden grade gespeichert...
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="alert alert-success floating_alert" role="alert" id="alertSavedSuccess">
+    <strong>Gespeichert!</strong> Die Einstellungen wurden gespeichert.
+</div>
+
+<script>
+    var jobLogName = '<%= job.logName %>';
+    var jobFileName = '<%= job.filename %>';
+</script>
