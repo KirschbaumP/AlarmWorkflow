@@ -106,7 +106,7 @@ fezMuenchenLand.prototype.parse = function (lines) {
         }
         //Einsatzmittel
         else if (this.Keywords.einsatzmittel.test(lines[i])) {
-            for (var j = i++; j < lines.length; j++) {
+            for (var j = ++i; j < lines.length; j++) {
                 i++;
                 if (this.Keywords.ende.test(lines[j])) {
                     return operation;

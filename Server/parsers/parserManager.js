@@ -16,8 +16,7 @@ module.exports = {
             throw "Parser nicht initialisiert!!!";
         }
 
-        //TODO: Pfad absolut???
-        var rawlines = fs.readFileSync(path.join("fax", file)).toString().split("\n");
+        var rawlines = fs.readFileSync(file).toString().split("\n");
         //Remove all empty lines
         var lines = [];
         for (i in rawlines) {
