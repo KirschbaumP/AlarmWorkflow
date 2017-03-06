@@ -1,10 +1,12 @@
 // Load Configuration
-var mysql_pool = require("./internal/database");
+var db = require("./internal/database");
 
 // Start Webserver
 var webServer = require("./webserver/webserverManager");
 
-var app = webServer.initialize(mysql_pool);
+var app = webServer.initialize(db);
 
-
-webServer.start(app);
+var jobs = require('./jobs/jobManager');
+jobs.initJobs(function (activeJobs) {
+    webServer.start(app);
+});

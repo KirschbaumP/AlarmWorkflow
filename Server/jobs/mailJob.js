@@ -14,7 +14,7 @@ var mailJob = function () {
 
 mailJob.prototype.getProperties = function () {
     return {
-        id: 'mailjob',
+        id: 'mailJob',
         name: 'Mail Job',
         logName: 'Job-Mail',
         preJob: false,
@@ -117,27 +117,26 @@ mailJob.prototype.getProperties = function () {
         ]
     };
 };
-mailJob.prototype.initialize = function (next, failed) {
+mailJob.prototype.initialize = function (data, success, failed) {
     var info = mailJob.prototype.getProperties();
-    settings.getSetting(info.id, function (data) {
-        if (data == null) {
+    if (data == null) {
 
-            var default_data = {};
-            for (var i in info.settings) {
-                default_data[info.settings[i].id] = info.settings[i].defaultValue;
+        var default_data = {};
+        for (var i in info.settings) {
+            default_data[info.settings[i].id] = info.settings[i].defaultValue;
+        }
+        default_data.active = false;
+        settings.setSettingCb(info.id, default_data, function (err1) {
+            if (err1) {
+                logger.error(err1);
+                failed(info.id, err1.toString());
             }
-            settings.setSettingCb(info.id, default_data, function (err1) {
-                if (err1) {
-                    logger.error(err1);
-                }
-                proceed(default_data);
-            });
-        }
-        else {
-            proceed(data);
-        }
-    });
-    var proceed = function (data) {
+            else {
+                success(info.id);
+            }
+        });
+    }
+    else {
         transporter = nodemailer.createTransport({
             host: data.smtphost,
             port: data.smtpport,
@@ -146,19 +145,25 @@ mailJob.prototype.initialize = function (next, failed) {
                 pass: data.smtppass
             }
         });
-        transporter.verify(function (error, success) {
-            if (error) {
-                logger.error(error);
-                failed();
+        transporter.verify(function (err, suc) {
+            if (err) {
+                logger.error(err);
+                failed(info.id, err.toString());
             }
-            mail_data = {
-                betreff: data.mailbetreff,
-                body: data.mailtext,
-                attach: data.mailattachfax,
-                absender: data.mailabsenderadresse
-            };
+            else if (suc == true) {
+                mail_data = {
+                    betreff: data.mailbetreff,
+                    body: data.mailtext,
+                    attach: data.mailattachfax,
+                    absender: data.mailabsenderadresse
+                };
+                success(info.id);
+            }
+            else {
+                failed(info.id, "Authentification failed")
+            }
         });
-    };
+    }
 };
 mailJob.prototype.doJob = function (operation, recipients, options) {
     if (transporter != null) {
@@ -175,8 +180,8 @@ mailJob.prototype.doJob = function (operation, recipients, options) {
                 }
             ];
         }
-        transporter.sendMail(mailoptions,function () {
-           //TODO: BREAK: callback parameter überprüfen/nachschauen
+        transporter.sendMail(mailoptions, function () {
+            //TODO: BREAK: callback parameter überprüfen/nachschauen
             //TODO: Loggen
         });
     }

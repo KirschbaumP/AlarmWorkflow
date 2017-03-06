@@ -11,15 +11,28 @@ var prefix = "/api/alarm";
 module.exports = function (passport, app, mysql_pool, isLoggedIn, isAdmin) {
     app.post(prefix + '/new', form(
         field("txt"),
-        field("tif")
+        field("tif"),
+        field("parser")
     ), function (req, res) {
-        // req.form.id
-        console.log(req.form.txt);
-        console.log(req.form.tif);
-        parserManager.setParser("fezMuenchenLand");
-        var operation = parserManager.parse(req.form.txt);
-        operation.txtFile = req.form.txt;
-        operation.tifFile = req.form.tif;
-        res.json(operation);
+        if (req.form.isValid) {
+            // Parse Fax
+            parserManager.parse(req.form.txt, req.form.parser, function (operation) {
+                operation.source = "fax";
+                // Set FilePaths
+                operation.txtFile = req.form.txt;
+                operation.tifFile = req.form.tif;
+
+                // Execute Jobs
+                // TODO:Execute Jobs
+
+
+                res.json(operation);
+            }, function (err) {
+                res.json({result: "error", message: err});
+            });
+        }
+        else {
+            res.json({result: "error", message: "Parameter fehlen"});
+        }
     });
 };

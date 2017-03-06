@@ -1,5 +1,5 @@
-var mysql_pool = require("./../internal/database");
-
+var db = require("./../internal/mongodb");
+var Logs = db.Logs;
 
 var getLevel = function (level) {
     switch (level) {
@@ -39,31 +39,25 @@ logger.prototype.fatal = function (messgage) {
 
 logger.prototype.log = function (message, level) {
     var source = this.source;
-
-    mysql_pool.getConnection(function (err, connection) {
-        connection.query('INSERT INTO logs (message, source, level) VALUES (?,?,?)', [message, source, level], function (error, result, fields) {
-            connection.release();
-            if (error) throw error;
-            console.log("Log: id: " + result.insertId + "; Source: " + source + "; Message: " + message + "; Level: " + getLevel(level));
-        });
+    var log = new Logs({
+        message: message,
+        level: level,
+        source: source
+    });
+    log.save(function (err) {
+        if (err) throw err;
     });
 }
 
 logger.prototype.getAllLogs = function (callback) {
-    mysql_pool.getConnection(function (err, connection) {
-        connection.query('SELECT * FROM logs ORDER BY timestamp desc', function (error, results, fields) {
-            callback(error, results, fields);
-            connection.release();
-        });
+    Logs.find({}, function (error, result) {
+        callback(error, result);
     });
 }
 
 logger.prototype.getAllDetailLogs = function (source, callback) {
-    mysql_pool.getConnection(function (err, connection) {
-        connection.query('SELECT id, message, level, timestamp FROM logs WHERE source=? ORDER BY timestamp DESC', [source], function (error, results, fields) {
-            connection.release();
-            callback(error, results, fields);
-        });
+    Logs.find({source: source}, function (error, result) {
+        callback(error, result);
     });
 }
 

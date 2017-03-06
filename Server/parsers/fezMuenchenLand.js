@@ -31,7 +31,7 @@ fezMuenchenLand.prototype.getProperties = function () {
     };
 };
 
-fezMuenchenLand.prototype.parse = function (lines) {
+fezMuenchenLand.prototype.parse = function (lines, callback) {
     var operation = new Operation();
     for (var i = 0; i < lines.length; i++) {
         // Einsatznummer und Alarmzeit
@@ -116,8 +116,7 @@ fezMuenchenLand.prototype.parse = function (lines) {
         }
 
     }
-
-    return operation;
+    callback(operation);
 };
 
 module.exports = new fezMuenchenLand();

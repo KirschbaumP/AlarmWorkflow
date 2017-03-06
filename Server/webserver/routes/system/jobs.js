@@ -7,23 +7,84 @@ var prefix = "/system/jobs";
 var vprefix = "system/jobs/";
 
 module.exports = function (passport, app, mysql_pool, isLoggedIn, isAdmin) {
+    app.get(prefix + '/', isAdmin, function (req, res) {
+        res.render(vprefix + 'index.ejs', {});
+    });
+    app.get(prefix + '/list', isAdmin, function (req, res) {
+        var data = [];
+
+        var jobs = jobManager.getAllJobsInformations();
+        var iteration = function (jobs, i) {
+            var proceed = function (jobs, i) {
+                if (jobs.length > ++i) {
+                    iteration(jobs, i);
+                }
+                else {
+                    res.json({data: data});
+                }
+            };
+            settingManager.getSetting(jobs[i].id, function (value) {
+                var button = "";
+                if (value) {
+                    if (value.active) {
+                        button = "<a href='/system/jobs/disable/" + jobs[i].id + "' class='btn btn-large btn-warning'>Deaktivieren</a>";
+                    }
+                    else {
+                        button = "<a href='/system/jobs/enable/" + jobs[i].id + "' class='btn btn-large btn-success'>Aktivieren</a>";
+                    }
+                }
+
+                data.push({
+                    job: "<a href='/system/jobs/" + jobs[i].id + "'>" + jobs[i].name + "</a>",
+                    buttons: button
+                });
+                proceed(jobs, i);
+            });
+        };
+        if (jobs.length > 0) {
+            iteration(jobs, 0);
+        }
+    });
+
+    app.get(prefix + '/disable/:job', isAdmin, function (req, res) {
+        settingManager.getSetting(req.params.job, function (value) {
+            if (value) {
+                value.active = false;
+                settingManager.setSettingCb(req.params.job, value, function () {
+                    res.redirect(prefix + '/');
+                });
+            }
+        });
+    });
+
+    app.get(prefix + '/enable/:job', isAdmin, function (req, res) {
+        settingManager.getSetting(req.params.job, function (value) {
+            if (value) {
+                value.active = true;
+                settingManager.setSettingCb(req.params.job, value, function () {
+                    res.redirect(prefix + '/');
+                });
+            }
+        });
+    });
+
     app.get(prefix + '/log/:job', isAdmin, function (req, res) {
-        logger.getAllDetailLogs(req.params.job, function (error, rows, fields) {
+        logger.getAllDetailLogs(req.params.job, function (error, rows) {
             if (error) logger.error(error);
 
             var data = [];
             for (var i in rows) {
                 data.push({
-                    time: rows[i].timestamp,
-                    level: rows[i].level,
+                    time: rows[i].timestamp.toLocaleString() ,
+                    level: rows[i].getLevel(),
                     message: rows[i].message
                 });
             }
 
             res.json({data: data});
-        })
+        });
     });
-    ;
+
     app.get(prefix + '/check', isAdmin, function (req, res) {
         var jobInfos = jobManager.getJobInformations(req.query.job);
         var settings = jobInfos.settings.filter(function (value) {
@@ -107,8 +168,8 @@ module.exports = function (passport, app, mysql_pool, isLoggedIn, isAdmin) {
                     }
                 }
             }
-            settingManager.setSettingCb(req.params.job, data,function (err) {
-                if(err)
+            settingManager.setSettingCb(req.params.job, data, function (err) {
+                if (err)
                     res.json({result: "error"});
                 else
                     res.json({result: "success"});

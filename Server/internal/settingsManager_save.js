@@ -1,16 +1,23 @@
-var db = require("./../internal/mongodb");
-var Settings = db.Settings;
-var Logger = require("./../shared/logger");
-var logger = new Logger("SettingsManager");
+var mysql = require("./database");
+
 
 module.exports = {
     getSetting: function (name, callback) {
-        Settings.findOne({settingname: name},function (err, setting) {
-            if(err){
-                logger.error(err);
-                callback({});
-            }
-            callback(setting);
+        mysql.getConnection(function (err, connection) {
+            connection.query('SELECT * FROM settings WHERE settingname=?',
+                [name], function (err1, result) {
+                    if (err1) {
+                        logger.error(err1);
+                        callback({});
+                    }
+                    connection.release();
+                    if (result.length == 0) {
+                        callback(null);
+                    }
+                    else {
+                        callback(JSON.parse(result[0].value));
+                    }
+                });
         });
     },
     setSetting: function (name, jsonValue) {

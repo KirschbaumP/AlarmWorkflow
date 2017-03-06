@@ -1,34 +1,57 @@
 var fs = require('fs');
 var path = require('path');
+var mysql = require('./../internal/database');
 
 var Logger = require("./../shared/logger");
 var logger = new Logger("parserManager");
 
 module.exports = {
-    setParser: function (name) {
-        this.parser = require("./" + name);
-    },
-    getCurrentParserProperties: function () {
-        return this.parser.getProperties();
-    },
-    parse: function (file) {
-        if (!this.parser) {
-            throw "Parser nicht initialisiert!!!";
+    parse: function (file, parserName, callback, error) {
+        var parser = null;
+        try {
+            parser = require("./" + parserName);
         }
-
-        var rawlines = fs.readFileSync(file).toString().split("\n");
-        //Remove all empty lines
-        var lines = [];
-        for (i in rawlines) {
-            rawlines[i] = rawlines[i].trim()
-            if (rawlines[i] !== "") {
-                lines.push(rawlines[i]);
+        catch (ex) {
+            console.log(ex);
+            error("Fehler: Keinen Parser gefunden");
+            return;
+        }
+        if (parser == null) {
+            error("Fehler: Keinen Parser gefunden");
+            return;
+        }
+        else {
+            var rawlines = fs.readFileSync(file).toString().split("\n");
+            //Remove all empty lines
+            var lines = [];
+            for (i in rawlines) {
+                rawlines[i] = rawlines[i].trim()
+                if (rawlines[i] !== "") {
+                    lines.push(rawlines[i]);
+                }
             }
+            //Parse the Lines
+            parser.parse(lines, function (operation) {
+                //Save operation to DB
+                var db_operation = operation;
+                delete db_operation['Id'];
+                mysql.getConnection(function (err, connection) {
+                    connection.query('INSERT INTO operations (value) VALUES (?)',
+                        [JSON.stringify(db_operation)], function (err1, result) {
+                            if (err1) {
+                                logger.error(err1.toString());
+                                error(err1.toString());
+                            }
+                            else {
+                                operation.Id = result.insertId;
+                                console.log(result.insertId);
+                                callback(operation);
+                            }
+                            connection.release();
+                        });
+                });
+            });
         }
-        //Parse the Lines
-        var operation = this.parser.parse(lines);
-
-        return operation;
     },
     getAllParserInformations: function () {
         var parser = [];
