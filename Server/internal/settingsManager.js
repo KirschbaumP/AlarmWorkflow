@@ -5,35 +5,34 @@ var logger = new Logger("SettingsManager");
 
 module.exports = {
     getSetting: function (name, callback) {
-        Settings.findOne({settingname: name},function (err, setting) {
-            if(err){
+        console.log(name);
+        Settings.findOne({settingsname: name}, function (err, setting) {
+            if (err) {
                 logger.error(err);
                 callback({});
             }
-            callback(setting);
+            console.log(setting);
+            if (setting) {
+                callback(setting);
+                console.log("1");
+            }
+            else {
+                callback(new Settings({settingsname: name, value: {}}));
+                console.log("2");
+            }
         });
     },
-    setSetting: function (name, jsonValue) {
-        mysql.getConnection(function (err, connection) {
-            connection.query('REPLACE INTO  settings SET settingname=?, value=?',
-                [name, JSON.stringify(jsonValue)], function (err1, result) {
-                    if (err1) {
-                        logger.error(err1);
-                    }
-                    connection.release();
-                });
+    setSetting: function (value) {
+        setSettingCb(name, value, function () {
         });
     },
-    setSettingCb: function (name, jsonValue, callback) {
-        mysql.getConnection(function (err, connection) {
-            connection.query('REPLACE INTO  settings SET settingname=?, value=?',
-                [name, JSON.stringify(jsonValue)], function (err1, result) {
-                    if (err1) {
-                        logger.error(err1);
-                    }
-                    connection.release();
-                    callback(err1);
-                });
+    setSettingCb: function (value, callback) {
+        value.save(function (err) {
+            if (err) {
+                logger.error(err.toString());
+                console.log(err.toString());
+            }
+            callback();
         });
     }
 };

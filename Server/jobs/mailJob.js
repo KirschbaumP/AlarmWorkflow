@@ -6,6 +6,9 @@ var nodemailer = require('nodemailer');
 
 var formatter = require("./../internal/formatter");
 
+var db = require("./../internal/mongodb");
+var Settings = db.Settings;
+
 var mail_data = {};
 
 
@@ -117,16 +120,17 @@ mailJob.prototype.getProperties = function () {
         ]
     };
 };
-mailJob.prototype.initialize = function (data, success, failed) {
+mailJob.prototype.initialize = function (settings, success, failed) {
     var info = mailJob.prototype.getProperties();
-    if (data == null) {
+    if (settings == null) {
 
         var default_data = {};
         for (var i in info.settings) {
             default_data[info.settings[i].id] = info.settings[i].defaultValue;
         }
         default_data.active = false;
-        settings.setSettingCb(info.id, default_data, function (err1) {
+        var save_value = new Settings({settingname: info.id, value: default_data});
+        settings.setSettingCb(save_value, function (err1) {
             if (err1) {
                 logger.error(err1);
                 failed(info.id, err1.toString());
@@ -137,6 +141,7 @@ mailJob.prototype.initialize = function (data, success, failed) {
         });
     }
     else {
+        var data = settings.value;
         transporter = nodemailer.createTransport({
             host: data.smtphost,
             port: data.smtpport,

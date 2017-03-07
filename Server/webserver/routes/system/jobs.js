@@ -26,7 +26,7 @@ module.exports = function (passport, app, mysql_pool, isLoggedIn, isAdmin) {
             settingManager.getSetting(jobs[i].id, function (value) {
                 var button = "";
                 if (value) {
-                    if (value.active) {
+                    if (value.value.active) {
                         button = "<a href='/system/jobs/disable/" + jobs[i].id + "' class='btn btn-large btn-warning'>Deaktivieren</a>";
                     }
                     else {
@@ -50,7 +50,7 @@ module.exports = function (passport, app, mysql_pool, isLoggedIn, isAdmin) {
         settingManager.getSetting(req.params.job, function (value) {
             if (value) {
                 value.active = false;
-                settingManager.setSettingCb(req.params.job, value, function () {
+                settingManager.setSettingCb(req.params.job, value, function (err) {
                     res.redirect(prefix + '/');
                 });
             }
@@ -60,8 +60,8 @@ module.exports = function (passport, app, mysql_pool, isLoggedIn, isAdmin) {
     app.get(prefix + '/enable/:job', isAdmin, function (req, res) {
         settingManager.getSetting(req.params.job, function (value) {
             if (value) {
-                value.active = true;
-                settingManager.setSettingCb(req.params.job, value, function () {
+                value.value.active = true;
+                settingManager.setSettingCb(req.params.job, value, function (err) {
                     res.redirect(prefix + '/');
                 });
             }
@@ -75,7 +75,7 @@ module.exports = function (passport, app, mysql_pool, isLoggedIn, isAdmin) {
             var data = [];
             for (var i in rows) {
                 data.push({
-                    time: rows[i].timestamp.toLocaleString() ,
+                    time: rows[i].timestamp.toLocaleString(),
                     level: rows[i].getLevel(),
                     message: rows[i].message
                 });
@@ -125,13 +125,13 @@ module.exports = function (passport, app, mysql_pool, isLoggedIn, isAdmin) {
             }
         }
 
-        settingManager.getSetting("mailjob", function (settings) {
+        settingManager.getSetting(job.id, function (settings) {
             res.render(vprefix + 'details.ejs', {
                 job: job,
-                settings: settings,
+                settings: settings.value,
                 getValue: function (num) {
                     var item = job.settings[num];
-                    return settings[item.id] ? settings[item.id] : item.defaultValue;
+                    return this.settings[item.id] ? this.settings[item.id] : item.defaultValue;
                 }
             });
         })
@@ -139,7 +139,8 @@ module.exports = function (passport, app, mysql_pool, isLoggedIn, isAdmin) {
 
     app.post(prefix + '/save/:job', isAdmin, function (req, res) {
         var jobInfos = jobManager.getJobInformations(req.params.job);
-        settingManager.getSetting(req.params.job, function (data) {
+        settingManager.getSetting(req.params.job, function (settings) {
+            var data = settings.value;
             for (var i in req.body) {
                 var tempSettigs = jobInfos.settings.filter(function (value) {
                     return i == value.id
@@ -168,7 +169,10 @@ module.exports = function (passport, app, mysql_pool, isLoggedIn, isAdmin) {
                     }
                 }
             }
-            settingManager.setSettingCb(req.params.job, data, function (err) {
+            console.log(data);
+            settings.value = data;
+            console.log(settings);
+            settingManager.setSettingCb(settings, function (err) {
                 if (err)
                     res.json({result: "error"});
                 else
