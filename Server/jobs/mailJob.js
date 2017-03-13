@@ -108,7 +108,7 @@ mailJob.prototype.getProperties = function () {
             },
             {
                 id: "mailattachfax",
-                name: "Fax anhängn",
+                name: "Fax anhängen",
                 description: "Ob das Fax an die Mail als Anhang mitgeschickt wird.",
                 settingType: "bool",
                 defaultValue: true,

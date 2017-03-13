@@ -14,7 +14,7 @@ var morgan = require('morgan');
 
 var jobManager = require('./../jobs/jobManager');
 
-var initialize = function (mysql) {
+var initialize = function () {
     require('./internal/auth')(passport);
     logger.debug("Start init Webserver");
     app = express();
@@ -52,7 +52,7 @@ var initialize = function (mysql) {
         next();
     });
 
-    routes(passport, app, mysql);
+    routes(passport, app);
 
     logger.information("Webserver initialized");
     return app;

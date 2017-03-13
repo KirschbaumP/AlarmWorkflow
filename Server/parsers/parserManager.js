@@ -1,6 +1,5 @@
 var fs = require('fs');
 var path = require('path');
-var mysql = require('./../internal/database');
 
 var Logger = require("./../shared/logger");
 var logger = new Logger("parserManager");
@@ -33,22 +32,14 @@ module.exports = {
             //Parse the Lines
             parser.parse(lines, function (operation) {
                 //Save operation to DB
-                var db_operation = operation;
-                delete db_operation['Id'];
-                mysql.getConnection(function (err, connection) {
-                    connection.query('INSERT INTO operations (value) VALUES (?)',
-                        [JSON.stringify(db_operation)], function (err1, result) {
-                            if (err1) {
-                                logger.error(err1.toString());
-                                error(err1.toString());
-                            }
-                            else {
-                                operation.Id = result.insertId;
-                                console.log(result.insertId);
-                                callback(operation);
-                            }
-                            connection.release();
-                        });
+                operation.save(function (err, new_operation) {
+                    if (err) {
+                        logger.error(err.toString());
+                        error(err.toString());
+                    }
+                    else {
+                        callback(new_operation);
+                    }
                 });
             });
         }

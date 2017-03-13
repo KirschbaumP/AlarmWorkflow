@@ -13,12 +13,13 @@ function isAdmin(req, res, next) {
     res.redirect('/');
 }
 
-module.exports = function (passport, app, mysql_pool) {
+module.exports = function (passport, app) {
     app.get('/', isLoggedIn, function (req, res) {
         res.render('home/index.ejs');
     });
 
-    require("./auth")(passport, app, mysql_pool, isLoggedIn);
-    require("./system/system")(passport, app, mysql_pool, isLoggedIn, isAdmin);
-    require("./api/api")(passport, app, mysql_pool, isLoggedIn, isAdmin);
+    require("./auth")(passport, app, isLoggedIn);
+    require("./system/system")(passport, app, isLoggedIn, isAdmin);
+    require("./management/management")(passport, app, isLoggedIn, isAdmin);
+    require("./api/api")(passport, app, isLoggedIn, isAdmin);
 };

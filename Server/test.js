@@ -1,24 +1,15 @@
 var mongo = require("./internal/mongodb");
-var Settings = mongo.Settings;
+var Users = mongo.Users;
 console.log("1");
-var ss = new Settings({settingsname: "TEST", value: {abc: 123}});
-console.log("2");
-ss.save(function (err1) {
-    if (err1) throw err1;
-    console.log("3");
-
-    ss.value={abc:321};
-
-    Settings.findByIdAndUpdate(ss._id, ss, {upsert: true})
-        .populate('friends')
-        .exec(function (err, user) {
-            if (err) throw err;
-            console.log(user);
-            console.log("4");
-
-            // Emit load event
-
-        });
-
-
+var user = new Users({
+    username: "admin",
+    password: "$2a$10$8QWkq1BlNCIb55m8XrxHoeijUW4mcNkplJf1PWK7VcIs56K0YR2xa",
+    admin: true
 });
+console.log("2");
+
+console.log(user);
+user.save(function (err1, val1) {
+    if (err1) throw err1;
+    console.log(val1);
+})

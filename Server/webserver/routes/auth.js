@@ -1,6 +1,6 @@
 var logger = require("./../../shared/logger");
 
-module.exports = function (passport, app, mysql_pool, isLoggedIn) {
+module.exports = function (passport, app, isLoggedIn) {
     app.get('/login', function (req, res) {
         if (req.isAuthenticated()) {
             res.redirect('/');

@@ -1,5 +1,6 @@
 var parserUtilities = require("./parserUtilities");
-var Operation = require("./../shared/operation");
+var mongo = require("./../internal/mongodb");
+var Operations = mongo.Operations;
 
 var fezMuenchenLand = function () {
     this.Keywords = {
@@ -32,7 +33,7 @@ fezMuenchenLand.prototype.getProperties = function () {
 };
 
 fezMuenchenLand.prototype.parse = function (lines, callback) {
-    var operation = new Operation();
+    var operation = new Operations({});
     for (var i = 0; i < lines.length; i++) {
         // Einsatznummer und Alarmzeit
         if (this.Keywords.einsatznr.test(lines[i])) {

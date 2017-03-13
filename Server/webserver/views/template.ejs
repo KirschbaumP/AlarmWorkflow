@@ -34,8 +34,13 @@
                 </div>
             </li>
             <% } %>
-            <li class="nav-item">
-                <a class="nav-link" href="/">Adressbuch</a>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Management</a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="/management/addressbook/">Adressbuch</a>
+                    <a class="dropdown-item" href="/management/profiles/">Profile</a>
+                    <a class="dropdown-item" href="/management/events/">Events</a>
+                </div>
             </li>
         </ul>
         <ul class="navbar-nav my-2 my-lg-0">

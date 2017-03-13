@@ -6,7 +6,7 @@ var settingManager = require("./../../../internal/settingsManager");
 var prefix = "/system/jobs";
 var vprefix = "system/jobs/";
 
-module.exports = function (passport, app, mysql_pool, isLoggedIn, isAdmin) {
+module.exports = function (passport, app, isLoggedIn, isAdmin) {
     app.get(prefix + '/', isAdmin, function (req, res) {
         res.render(vprefix + 'index.ejs', {});
     });
@@ -169,9 +169,7 @@ module.exports = function (passport, app, mysql_pool, isLoggedIn, isAdmin) {
                     }
                 }
             }
-            console.log(data);
             settings.value = data;
-            console.log(settings);
             settingManager.setSettingCb(settings, function (err) {
                 if (err)
                     res.json({result: "error"});

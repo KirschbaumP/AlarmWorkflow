@@ -1,24 +1,20 @@
-var db = require("./../internal/mongodb");
+var db = require("./mongodb");
 var Settings = db.Settings;
 var Logger = require("./../shared/logger");
 var logger = new Logger("SettingsManager");
 
 module.exports = {
     getSetting: function (name, callback) {
-        console.log(name);
         Settings.findOne({settingsname: name}, function (err, setting) {
             if (err) {
                 logger.error(err);
                 callback({});
             }
-            console.log(setting);
             if (setting) {
                 callback(setting);
-                console.log("1");
             }
             else {
                 callback(new Settings({settingsname: name, value: {}}));
-                console.log("2");
             }
         });
     },
@@ -27,10 +23,12 @@ module.exports = {
         });
     },
     setSettingCb: function (value, callback) {
+        var data = value.value;
+        value.value = null;
+        value.value = data;
         value.save(function (err) {
             if (err) {
                 logger.error(err.toString());
-                console.log(err.toString());
             }
             callback();
         });

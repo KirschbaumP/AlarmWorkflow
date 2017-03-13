@@ -8,7 +8,7 @@ var field = form.field;
 
 var prefix = "/api/alarm";
 
-module.exports = function (passport, app, mysql_pool, isLoggedIn, isAdmin) {
+module.exports = function (passport, app, isLoggedIn, isAdmin) {
     app.post(prefix + '/new', form(
         field("txt"),
         field("tif"),
