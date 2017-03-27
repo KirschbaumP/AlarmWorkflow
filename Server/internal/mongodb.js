@@ -1,16 +1,3 @@
-/*var mysql = require('mysql');
- var pool  = mysql.createPool({
- connectionLimit : 5,
- host: process.env.DBHOST,
- port: process.env.DBPORT,
- user: process.env.DBUSER,
- password: process.env.DBPASS,
- database: process.env.DBDATABASE
- });
-
- module.exports = pool;
- */
-
 var mongoose = require('mongoose');
 
 mongoose.connect(process.env.MONGODB);
@@ -118,7 +105,7 @@ var kontaktSchema = new Schema({
     nachname: String,
     details: Array
 });
-var Kontakte = mongoose.model('kontakte', kontaktSchema);
+var Kontakte = mongoose.model('kontakte ', kontaktSchema);
 
 module.exports = {
     connection: mongoose,

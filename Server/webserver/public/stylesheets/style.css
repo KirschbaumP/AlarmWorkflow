@@ -8,3 +8,12 @@ body {
     left:40%;
     z-index: 5000;
 }
+
+table.dataTable tbody tr.selected{
+    background-color: #B0BED9;
+}
+
+.box{
+    border: solid #f7f7f9;
+    border-width: 5px;
+}

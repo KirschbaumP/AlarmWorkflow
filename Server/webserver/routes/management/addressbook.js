@@ -22,7 +22,7 @@ module.exports = function (passport, app, isLoggedIn, isAdmin) {
                 kontakte2[i].buttons = "<a class='btn-danger btn delete' href='" + prefix + "/remove/" + kontakte2[i]._id + "'>Löschen</a>";
             }
             res.json({data: kontakte2});
-        })
+        });
     });
     app.post(prefix + '/create', isAdmin, form(
         field("vorname"),
@@ -30,7 +30,8 @@ module.exports = function (passport, app, isLoggedIn, isAdmin) {
     ), function (req, res) {
         var kontakt = new Kontakt({
             vorname: req.form.vorname,
-            nachname: req.form.nachname
+            nachname: req.form.nachname,
+            details:[]
         });
         kontakt.save(function (err, data) {
             if (err)logger.error(err.toString());
@@ -39,5 +40,19 @@ module.exports = function (passport, app, isLoggedIn, isAdmin) {
     });
     app.get(prefix + '/details/:id', isLoggedIn, function (req, res) {
         res.render(vprefix + 'details.ejs', {});
+    });
+    app.get(prefix + '/remove/:id', isLoggedIn, function (req, res) {
+        Kontakt.findById(req.params.id, function (err, kontakt) {
+            if (err)logger.error(err.toString());
+            if (kontakt) {
+                kontakt.remove(function (err2) {
+                    if (err2)logger.error(err2.toString());
+                    res.redirect(prefix + '/');
+                });
+            }
+            else {
+                res.redirect(prefix + '/');
+            }
+        });
     });
 };

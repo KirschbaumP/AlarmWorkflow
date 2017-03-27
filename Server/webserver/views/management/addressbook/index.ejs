@@ -4,10 +4,11 @@
 <% script('/static/javascripts/jQueryForm.js') -%>
 <% script('/static/javascripts/management/addressbook/index.js') %>
 
-<div class="rows">
-    <div class="col-md-12">
+<div class="row">
+    <div class="col-6">
         <h1>Adressbuch</h1>
-            <button class="btn  btn-success" data-toggle="modal" data-target="#createModal">Hinzuf&uuml;gen</button>
+        <button class="btn  btn-success" data-toggle="modal" data-target="#createModal">Hinzuf&uuml;gen</button>
+        <button class="btn  btn-success" id="test1">TEST1</button>
         <table id="dataTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
             <thead>
             <tr>
@@ -17,6 +18,29 @@
             </tr>
             </thead>
         </table>
+    </div>
+
+    <div class="col-6">
+        <h2>Details</h2>
+        <div class="row">
+            <div class="col-3">
+                <div class="form-group">
+                    <select class="form-control" id="addDetailOption">
+                        <option value="mail">E-Mail</option>
+                        <option value="phone">Telefon</option>
+                        <option value="push">Push</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="form-group">
+                    <button class="btn  btn-success" id="addDetail">Neu</button>
+                </div>
+            </div>
+        </div>
+        <div id="details">
+
+        </div>
     </div>
 
 </div>
