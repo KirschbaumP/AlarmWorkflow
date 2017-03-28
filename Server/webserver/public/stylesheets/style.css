@@ -14,6 +14,9 @@ table.dataTable tbody tr.selected{
 }
 
 .box{
-    border: solid #f7f7f9;
-    border-width: 5px;
+    border: solid #949495;
+    border-width: 2px;
+    border-radius: 5px;
+    margin-bottom: 0.5rem;
+    padding: 5px;
 }
