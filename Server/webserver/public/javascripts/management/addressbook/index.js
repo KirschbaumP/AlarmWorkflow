@@ -1,24 +1,22 @@
 $(document).ready(function () {
     var selected = false;
     var table = $('#dataTable')
-        /*.on('xhr.dt', function (e, settings, json, xhr) {
-         var id = $.urlParam("selected");
-         alert(id);
-            if (id && id != null) {
-                table.row(function (idx, data, node) {
-                    return data._id === id ?
-                        true : false;
-                }).select();
-
-            }
-        })*/.on( 'draw.dt', function () {
-        $('#dataTable tbody tr').each(function( index ) {
-            console.log( index + ": " + $( this ).text() );
-        });
+        .on('draw.dt', function () {
             var id = $.urlParam("selected");
-            alert(id);
-            console.log( 'Redraw occurred at: '+new Date().getTime() );
-        } )
+            if (id && id != null) {
+
+                $('#dataTable tbody tr').each(function (index) {
+                    var rowData = table.row(this).data();
+                    if (rowData && rowData != null) {
+                        if (rowData._id == id) {
+                            table.$('tr.selected').removeClass('selected');
+                            $(this).addClass("selected");
+                            showDetails();
+                        }
+                    }
+                });
+            }
+        })
         .DataTable({
             "ajax": "/management/addressbook/list",
             "columns": [
@@ -33,6 +31,29 @@ $(document).ready(function () {
             }
         });
     $("#details").css({"display": "none"});
+
+    var showDetails = function () {
+        if (table.$('tr.selected').length) {
+            $("#details").css({"display": "block"});
+            var data = table.row('.selected').data();
+            console.log(data);
+
+            for(var i in data.details.mail){
+                console.log(data.details.mail[i]);
+
+            }
+
+            /*for (var item in data.details){
+             var newDiv = $(document.createElement("div"));
+             newDiv.addClass("box");
+
+             if(item.type == "mail"){
+             newDiv.html("ABC");
+             }
+             $("#details").prepend(newDiv);
+             }*/
+        }
+    };
 
     $('#dataTable tbody').on('click', 'tr', function () {
         if ($(this).hasClass('selected')) {
@@ -50,34 +71,8 @@ $(document).ready(function () {
         }
 
         $("#details").css({"display": "none"});
-        if (table.$('tr.selected').length) {
-            $("#details").css({"display": "block"});
-            var data = table.row('.selected').data();
+        showDetails();
 
-            /*for (var item in data.details){
-             var newDiv = $(document.createElement("div"));
-             newDiv.addClass("box");
-
-             if(item.type == "mail"){
-             newDiv.html("ABC");
-             }
-             $("#details").prepend(newDiv);
-             }*/
-        }
-    });
-
-
-    $("#addDetail").click(function () {
-        if (table.$('tr.selected').length != 1) return;
-
-        /*var type = $("#addDetailOption option:selected").val();
-         var newDiv = $(document.createElement("div"));
-         newDiv.addClass("box");
-         newDiv.html("ABC");
-         if (type == "mail") {
-
-         }
-         $("#details").prepend(newDiv);*/
     });
 
     // Edit Modal

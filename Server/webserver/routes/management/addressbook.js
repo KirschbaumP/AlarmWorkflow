@@ -30,8 +30,7 @@ module.exports = function (passport, app, isLoggedIn, isAdmin) {
     ), function (req, res) {
         var kontakt = new Kontakt({
             vorname: req.form.vorname,
-            nachname: req.form.nachname,
-            details:[]
+            nachname: req.form.nachname
         });
         kontakt.save(function (err, data) {
             if (err)logger.error(err.toString());

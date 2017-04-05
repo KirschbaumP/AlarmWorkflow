@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 
-mongoose.connect(process.env.MONGODB);
+var db = mongoose.connect(process.env.MONGODB);
 
 var Schema = mongoose.Schema;
 
@@ -103,9 +103,14 @@ var Operations = mongoose.model('operations', operationsSchema);
 var kontaktSchema = new Schema({
     vorname: String,
     nachname: String,
-    details: Array
-});
-var Kontakte = mongoose.model('kontakte ', kontaktSchema);
+    details: { type: Schema.Types.Mixed, default: {
+        mail:[],
+        push:[],
+        phone:[]
+    } }
+}, { minimize: false });
+//delete mongoose.connection.models['kontaktes'];
+var Kontakte = mongoose.model('kontakte', kontaktSchema);
 
 module.exports = {
     connection: mongoose,
