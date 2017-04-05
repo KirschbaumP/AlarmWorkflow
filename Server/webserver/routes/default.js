@@ -1,16 +1,17 @@
 var Logger = require("./../../shared/logger");
 var logger = new Logger("WebServer-Routes-Default");
+var urlencode = require('urlencode');
 
 function isLoggedIn(req, res, next) {
     if (req.isAuthenticated())
         return next();
-    res.redirect('/login');
+    res.redirect('/login?origin=' + urlencode(req.route.path));
 }
 
 function isAdmin(req, res, next) {
     if (req.isAuthenticated() && req.user.isAdmin)
         return next();
-    res.redirect('/');
+    res.redirect('/login?origin='+urlencode(req.route.path));
 }
 
 module.exports = function (passport, app) {

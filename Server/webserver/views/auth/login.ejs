@@ -8,6 +8,7 @@
 <div class="container">
 
     <form class="form-signin" action="/login" method="post">
+        <input type="hidden" name="redirect" value="<%= redirect %>">
         <% if (message.length > 0) { %>
         <div class="alert alert-danger"><%= message %></div>
         <% } %>
